@@ -1,27 +1,46 @@
 const http = require('http')
-const router = require('find-my-way')()
+const router = require('find-my-way')(
+  {
+    defaultRoute: (request, response) => {
+      const objContent = {
+        message: 'Halaman tidak ditemukan'
+      }
+
+      const jsonContent = JSON.stringify(objContent)
+
+      response.statusCode = 404
+      response.end(jsonContent)
+    }
+  }
+)
 
 // ROUTING
 
 // home
 router.on('GET', '/', (request, response) => {
-  response.setHeader('Content-Type', 'text/html')
-  response.statusCode = 200
+  const objContent = {
+    message: 'Ini adalah homepage'
+  }
 
-  response.end('<h1>Ini adalah homepage</h1>');
+  const jsonContent = JSON.stringify(objContent)
+
+  response.statusCode = 200
+  response.end(jsonContent)
 })
 
 // about
 router.on('GET', '/about', (request, response) => {
-  response.setHeader('Content-Type', 'text/html')
-  response.statusCode = 200
+  const objContent = {
+    message: 'Halo! Ini adalah halaman about'
+  }
 
-  response.end('<h1>Halo! Ini adalah halaman about</h1>');
+  const jsonContent = JSON.stringify(objContent)
+
+  response.statusCode = 200
+  response.end(jsonContent)
 })
 
 router.on('POST', '/about', (request, response) => {
-  response.setHeader('Content-Type', 'text/html')
-
   let body = []
 
   request.on('data', (chunk) => {
@@ -34,13 +53,22 @@ router.on('POST', '/about', (request, response) => {
 
     const name = body.name
 
+    const objContent = {
+      message: `Halo, ${name}! Ini adalah halaman about`
+    }
+
+    const jsonContent = JSON.stringify(objContent)
+
     response.statusCode = 200
-    response.end(`<h1>Halo, ${name}! Ini adalah halaman about</h1>`)
+    response.end(jsonContent)
   })
 })
 
 // SERVER
 const server = http.createServer((request, response) => {
+  response.setHeader('Content-Type', 'application/json')
+  response.setHeader('X-Powered-By', 'NodeJS')
+
   router.lookup(request, response)
 })
 
